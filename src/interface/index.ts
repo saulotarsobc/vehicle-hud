@@ -18,4 +18,9 @@ export interface Statistic {
    * Ângulo de inclinação esquerda/direita -90º - 90º
    */
   angle_x: number;
+
+  /**
+   * Temperatura do motor
+   */
+  temperature: number;
 }

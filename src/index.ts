@@ -13,7 +13,7 @@ const CLIP_LENGTH = 500;
 
 // MOCK DE DADOS
 const data: Statistic[] = Array.from({ length: CLIP_LENGTH }, (_, i) => {
-  const angle_y = Math.sin(i / 10) * 10; // simula curva suave
+  const angle_y = Math.sin(i / 20) * 20; // simula curva suave
   const angle_x = Math.cos(i / 15) * 5; // simula inclinação leve
 
   return {
@@ -21,6 +21,7 @@ const data: Statistic[] = Array.from({ length: CLIP_LENGTH }, (_, i) => {
     arrow_left: i % 40 >= 20 && i % 40 < 30, // seta esquerda ligada de 20-29, 60-69, etc.
     angle_y: parseFloat(angle_y.toFixed(2)),
     angle_x: parseFloat(angle_x.toFixed(2)),
+    temperature: 50 + ((Math.sin(i / 10) + 1) / 2) * 40,
   };
 });
 
@@ -49,8 +50,6 @@ function clearDir(name: string) {
 function createDir(name: string) {
   mkdirSync(name, { recursive: true });
 }
-
-// DESENHA UM FRAME
 
 // GERA O VÍDEO
 function generateVideoFromFrames() {
