@@ -8,18 +8,63 @@ Gera visualizações animadas em vídeo a partir de dados de sensores simulando 
 
 - [SVG Repo](https://www.svgrepo.com/)
 
+---
+
 ## 📈 Exemplo de Dados
 
-```plaintext
-arrow_rigth  arrow_left  angle_y  angle_x  temperature
-True         False       0.00     5.00      30
-True         False       1.00     4.99      31
-True         False       1.99     4.96      32
-True         False       2.96     4.90      34
-True         False       3.89     4.82      36
-```
-
-````
+<div align="center">
+<table>
+  <thead>
+    <tr>
+      <th>arrow_rigth</th>
+      <th>arrow_left</th>
+      <th>angle_y</th>
+      <th>angle_x</th>
+      <th>temperature</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>true</td>
+      <td>false</td>
+      <td>0.00</td>
+      <td>5.00</td>
+      <td>30</td>
+    </tr>
+    <tr>
+      <td>true</td>
+      <td>false</td>
+      <td>1.00</td>
+      <td>4.99</td>
+      <td>31</td>
+    </tr>
+    <tr>
+      <td>true</td>
+      <td>false</td>
+      <td>1.99</td>
+      <td>4.96</td>
+      <td>32</td>
+    </tr>
+    <tr>
+      <td>true</td>
+      <td>false</td>
+      <td>2.96</td>
+      <td>4.90</td>
+      <td>34</td>
+    </tr>
+    <tr>
+      <td>true</td>
+      <td>false</td>
+      <td>3.89</td>
+      <td>4.82</td>
+      <td>36</td>
+    </tr>
+     <tr>
+      <td colspan="5" style="text-align: center;">...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 ---
 
@@ -107,4 +152,3 @@ npx tsx src/index.ts
 
 [Hcode Consultoria e Treinamentos](https://hcode.com.br)
 🐘 Mascote oficial: Hedgehog Laranja `#FF760C` e Cinza `#79756C`
-````
