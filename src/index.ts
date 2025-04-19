@@ -6,8 +6,8 @@ import { drawSVGFrame } from "./utils";
 // CONFIGURAÇÕES
 const FRAME_DIR = "./temp/frames";
 const OUTPUT_VIDEO = "./temp/output.mp4";
-const WIDTH = 1434.806;
-const HEIGHT = 434.806;
+const WIDTH = 1280;
+const HEIGHT = 720;
 const FRAMERATE = 30;
 const CLIP_LENGTH = 500;
 
