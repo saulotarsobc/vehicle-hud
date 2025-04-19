@@ -1,16 +1,15 @@
 import { execSync } from "child_process";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, rmSync } from "fs";
 import { Statistic } from "./interface";
-import path = require("path");
-import sharp = require("sharp");
+import { drawSVGFrame } from "./utils";
 
 // CONFIGURAÇÕES
 const FRAME_DIR = "./temp/frames";
 const OUTPUT_VIDEO = "./temp/output.mp4";
-const WIDTH = 640;
-const HEIGHT = 360;
-const FRAMERATE = 10;
-const CLIP_LENGTH = 300;
+const WIDTH = 1434.806;
+const HEIGHT = 434.806;
+const FRAMERATE = 30;
+const CLIP_LENGTH = 500;
 
 // MOCK DE DADOS
 const data: Statistic[] = Array.from({ length: CLIP_LENGTH }, (_, i) => {
@@ -31,7 +30,9 @@ async function main() {
   createDir(FRAME_DIR);
 
   // Aguarda todos os frames serem gerados
-  await Promise.all(data.map((stat, index) => drawSVGFrame(stat, index)));
+  await Promise.all(
+    data.map((stat, index) => drawSVGFrame(stat, index, FRAME_DIR))
+  );
 
   // Só então gera o vídeo
   generateVideoFromFrames();
@@ -49,43 +50,7 @@ function createDir(name: string) {
   mkdirSync(name, { recursive: true });
 }
 
-async function drawSVGFrame(stat: Statistic, index: number) {
-  const svg = generateSVG(stat);
-  const buffer = await sharp(Buffer.from(svg)).png().toBuffer();
-  writeFileSync(
-    path.join(FRAME_DIR, `frame_${String(index).padStart(3, "0")}.png`),
-    buffer
-  );
-}
-
 // DESENHA UM FRAME
-function generateSVG(stat: Statistic): string {
-  const rotateDeg = stat.angle_y.toFixed(2);
-  const arrowLeft = stat.arrow_left
-    ? `<polygon points="20,50 10,45 10,55" fill="blue" />`
-    : "";
-  const arrowRight = stat.arrow_rigth
-    ? `<polygon points="180,50 190,45 190,55" fill="green" />`
-    : "";
-
-  return `
-    <svg width="200" height="100" xmlns="http://www.w3.org/2000/svg">
-      <rect width="100%" height="100%" fill="white"/>
-      ${arrowLeft}
-      ${arrowRight}
-      <g transform="translate(100,50) rotate(${rotateDeg})">
-        <!-- corpo da moto -->
-        <rect x="-30" y="-10" width="60" height="20" fill="#FF760C" rx="5" />
-        <!-- rodas -->
-        <circle cx="-25" cy="12" r="6" fill="#333"/>
-        <circle cx="25" cy="12" r="6" fill="#333"/>
-        <!-- guidão -->
-        <line x1="20" y1="-10" x2="30" y2="-20" stroke="#79756C" stroke-width="2"/>
-        <line x1="20" y1="-10" x2="30" y2="0" stroke="#79756C" stroke-width="2"/>
-      </g>
-    </svg>
-  `;
-}
 
 // GERA O VÍDEO
 function generateVideoFromFrames() {
