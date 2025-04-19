@@ -3,7 +3,7 @@
 <g id="hud" clip-path="url(#clip0_0_1)">
 <rect width="1280" height="720" fill="white"/>
 <g id="background">
-<rect id="fframe" width="1280" height="720" fill="#D9D9D9"/>
+<rect id="fframe" width="1280" height="720" fill="#00EF03"/>
 </g>
 <g id="moto">
 <path id="Vector" d="M715.203 363.461H566.711V508.17H715.203V363.461Z" fill="#808080" stroke="black"/>
