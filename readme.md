@@ -4,6 +4,10 @@ Gera visualizações animadas em vídeo a partir de dados de sensores simulando 
 
 ---
 
+## 🫳 Help
+
+- [SVG Repo](https://www.svgrepo.com/)
+
 ## 📈 Exemplo de Dados
 
 ```plaintext
