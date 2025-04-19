@@ -150,5 +150,4 @@ npx tsx src/index.ts
 
 ## 🧠 Desenvolvido por
 
-[Hcode Consultoria e Treinamentos](https://hcode.com.br)
-🐘 Mascote oficial: Hedgehog Laranja `#FF760C` e Cinza `#79756C`
+- [Saulo Costa](https://github.com/saulotarsobc)
