@@ -31,13 +31,13 @@ function generateSVG(stat: Statistic): string {
 
   // Atualiza a cor do right_mirror com base no estado da seta
   svg = svg.replace(
-    /(<path[^>]*id="right_mirror"[^>]*fill=")(#[0-9A-Fa-f]{6})(")/,
+    /(<path[^>]*id="right_arrow"[^>]*fill=")(#[0-9A-Fa-f]{6})(")/,
     `$1${stat.arrow_rigth ? "#F7CF52" : "#E6E6E6"}$3`
   );
 
   // Atualiza a cor do right_mirror com base no estado da seta
   svg = svg.replace(
-    /(<path[^>]*id="left_mirror"[^>]*fill=")(#[0-9A-Fa-f]{6})(")/,
+    /(<path[^>]*id="left_arrow"[^>]*fill=")(#[0-9A-Fa-f]{6})(")/,
     `$1${stat.arrow_left ? "#F7CF52" : "#E6E6E6"}$3`
   );
 
