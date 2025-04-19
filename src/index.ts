@@ -1,13 +1,14 @@
-import { createCanvas } from "canvas";
 import { execSync } from "child_process";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "fs";
 import { Statistic } from "./interface";
+import path = require("path");
+import sharp = require("sharp");
 
 // CONFIGURAÇÕES
 const FRAME_DIR = "./temp/frames";
 const OUTPUT_VIDEO = "./temp/output.mp4";
-const WIDTH = 400;
-const HEIGHT = 400;
+const WIDTH = 640;
+const HEIGHT = 360;
 const FRAMERATE = 10;
 const CLIP_LENGTH = 300;
 
@@ -28,7 +29,11 @@ const data: Statistic[] = Array.from({ length: CLIP_LENGTH }, (_, i) => {
 async function main() {
   clearDir(FRAME_DIR);
   createDir(FRAME_DIR);
-  data.forEach((stat, index) => drawVehicle(stat, index));
+
+  // Aguarda todos os frames serem gerados
+  await Promise.all(data.map((stat, index) => drawSVGFrame(stat, index)));
+
+  // Só então gera o vídeo
   generateVideoFromFrames();
 }
 
@@ -44,75 +49,42 @@ function createDir(name: string) {
   mkdirSync(name, { recursive: true });
 }
 
-// DESENHA UM FRAME
-function drawVehicle(stat: Statistic, index: number) {
-  const canvas = createCanvas(WIDTH, HEIGHT);
-  const ctx = canvas.getContext("2d");
-
-  // fundo branco
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-  ctx.save();
-
-  // posiciona e rotaciona conforme ângulo
-  ctx.translate(WIDTH / 2, HEIGHT / 2);
-  ctx.rotate((stat.angle_y * Math.PI) / 180);
-
-  // corpo da moto (mais comprido e estreito)
-  ctx.fillStyle = "#FF760C";
-  ctx.fillRect(-60, -15, 120, 30);
-
-  // rodas
-  ctx.fillStyle = "#333";
-  ctx.beginPath();
-  ctx.arc(-50, 20, 10, 0, Math.PI * 2); // roda traseira
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(50, 20, 10, 0, Math.PI * 2); // roda dianteira
-  ctx.fill();
-
-  // guidão
-  ctx.strokeStyle = "#79756C";
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(45, -15);
-  ctx.lineTo(65, -25);
-  ctx.moveTo(45, -15);
-  ctx.lineTo(65, -5);
-  ctx.stroke();
-
-  ctx.restore();
-
-  // seta esquerda (fixa no canto esquerdo)
-  if (stat.arrow_rigth) {
-    ctx.fillStyle = "blue";
-    ctx.beginPath();
-    ctx.moveTo(60, HEIGHT / 2);
-    ctx.lineTo(40, HEIGHT / 2 - 10);
-    ctx.lineTo(40, HEIGHT / 2 + 10);
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  // seta direita (fixa no canto direito)
-  if (stat.arrow_left) {
-    ctx.fillStyle = "green";
-    ctx.beginPath();
-    ctx.moveTo(WIDTH - 60, HEIGHT / 2);
-    ctx.lineTo(WIDTH - 40, HEIGHT / 2 - 10);
-    ctx.lineTo(WIDTH - 40, HEIGHT / 2 + 10);
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  // exporta imagem
-  const buffer = canvas.toBuffer("image/png");
+async function drawSVGFrame(stat: Statistic, index: number) {
+  const svg = generateSVG(stat);
+  const buffer = await sharp(Buffer.from(svg)).png().toBuffer();
   writeFileSync(
-    `${FRAME_DIR}/frame_${String(index).padStart(3, "0")}.png`,
+    path.join(FRAME_DIR, `frame_${String(index).padStart(3, "0")}.png`),
     buffer
   );
+}
+
+// DESENHA UM FRAME
+function generateSVG(stat: Statistic): string {
+  const rotateDeg = stat.angle_y.toFixed(2);
+  const arrowLeft = stat.arrow_left
+    ? `<polygon points="20,50 10,45 10,55" fill="blue" />`
+    : "";
+  const arrowRight = stat.arrow_rigth
+    ? `<polygon points="180,50 190,45 190,55" fill="green" />`
+    : "";
+
+  return `
+    <svg width="200" height="100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100%" height="100%" fill="white"/>
+      ${arrowLeft}
+      ${arrowRight}
+      <g transform="translate(100,50) rotate(${rotateDeg})">
+        <!-- corpo da moto -->
+        <rect x="-30" y="-10" width="60" height="20" fill="#FF760C" rx="5" />
+        <!-- rodas -->
+        <circle cx="-25" cy="12" r="6" fill="#333"/>
+        <circle cx="25" cy="12" r="6" fill="#333"/>
+        <!-- guidão -->
+        <line x1="20" y1="-10" x2="30" y2="-20" stroke="#79756C" stroke-width="2"/>
+        <line x1="20" y1="-10" x2="30" y2="0" stroke="#79756C" stroke-width="2"/>
+      </g>
+    </svg>
+  `;
 }
 
 // GERA O VÍDEO
@@ -123,7 +95,8 @@ function generateVideoFromFrames() {
   }
 
   try {
-    const command = `ffmpeg -y -framerate ${FRAMERATE} -i ${FRAME_DIR}/frame_%03d.png -c:v libx264 -r 30 -pix_fmt yuv420p ${OUTPUT_VIDEO}`;
+    const command = `ffmpeg -y -framerate ${FRAMERATE} -i ${FRAME_DIR}/frame_%03d.png -vf scale=${WIDTH}:${HEIGHT} -c:v libx264 -r 30 -pix_fmt yuv420p ${OUTPUT_VIDEO}`;
+
     console.log("🎥 Gerando vídeo...");
     execSync(command, { stdio: "inherit" });
     console.log(`✅ Vídeo gerado com sucesso: ${OUTPUT_VIDEO}`);
